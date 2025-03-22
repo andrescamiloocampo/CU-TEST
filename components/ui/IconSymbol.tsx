@@ -1,32 +1,25 @@
-// This file is a fallback for using MaterialIcons on Android and web.
-
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { SymbolWeight } from 'expo-symbols';
-import React from 'react';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import { FontAwesome } from '@expo/vector-icons';
 import { OpaqueColorValue, StyleProp, ViewStyle } from 'react-native';
-
-// Add your SFSymbol to MaterialIcons mappings here.
-const MAPPING = {
-  // See MaterialIcons here: https://icons.expo.fyi
-  // See SF Symbols in the SF Symbols app on Mac.
-  'house.fill': 'home',
-  'paperplane.fill': 'send',
-  'chevron.left.forwardslash.chevron.right': 'code',
-  'chevron.right': 'chevron-right',
-} as Partial<
-  Record<
-    import('expo-symbols').SymbolViewProps['name'],
-    React.ComponentProps<typeof MaterialIcons>['name']
-  >
->;
 
 export type IconSymbolName = keyof typeof MAPPING;
 
-/**
- * An icon component that uses native SFSymbols on iOS, and MaterialIcons on Android and web. This ensures a consistent look across platforms, and optimal resource usage.
- *
- * Icon `name`s are based on SFSymbols and require manual mapping to MaterialIcons.
- */
+// Mapeo de nombres de iconos con su respectiva familia y nombre en la librería
+const MAPPING: Record<
+  IconSymbolName,
+  { family: 'MaterialIcons' | 'Ionicons' | 'FontAwesome'; name: string }
+> = {
+  'house.fill': { family: 'MaterialIcons', name: 'home' },
+  'paperplane.fill': { family: 'Ionicons', name: 'paper-plane' },
+  'chevron.left.forwardslash.chevron.right': { family: 'MaterialIcons', name: 'code' },
+  'chevron.right': { family: 'MaterialIcons', name: 'chevron-right' },
+  'planet.fill': { family: 'Ionicons', name: 'planet' },
+  'people.fill': {family: 'Ionicons',name: 'people'},
+  'arrow-left': {family: 'FontAwesome',name: 'arrow-left'},
+  'arrow-right': {family: 'FontAwesome',name: 'arrow-right'},
+};
+
 export function IconSymbol({
   name,
   size = 24,
@@ -37,7 +30,23 @@ export function IconSymbol({
   size?: number;
   color: string | OpaqueColorValue;
   style?: StyleProp<ViewStyle>;
-  weight?: SymbolWeight;
 }) {
-  return <MaterialIcons color={color} size={size} name={MAPPING[name]} style={style} />;
+  const icon = MAPPING[name];
+
+  if (!icon) {
+    console.warn(`Icon "${name}" not found in MAPPING.`);
+    return null;
+  }
+
+  const { family, name: iconName } = icon;
+
+  if (family === 'MaterialIcons') {
+    return <MaterialIcons name={iconName} size={size} color={color} style={style} />;
+  } else if (family === 'Ionicons') {
+    return <Ionicons name={iconName} size={size} color={color} style={style} />;
+  } else if (family === 'FontAwesome') {
+    return <FontAwesome name={iconName} size={size} color={color} style={style} />;
+  }
+
+  return null;
 }
