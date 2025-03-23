@@ -1,6 +1,6 @@
 # Proyecto React Native con Expo
 
-Este es un proyecto de ejemplo desarrollado con React Native y Expo. Sigue las instrucciones a continuación para configurar y ejecutar el proyecto en tu máquina local.
+Este es un proyecto para una prueba tecnica desarrollado con React Native y Expo. Sigue las instrucciones a continuación para configurar y ejecutar el proyecto en tu máquina local.
 
 ## Requisitos previos
 
