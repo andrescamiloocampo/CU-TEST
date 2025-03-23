@@ -3,17 +3,18 @@ import {
   CharacterModel,
   CharacterSpanishModel,
 } from "@/models/character.model";
+
 const {EXPO_PUBLIC_SWAPI_URL} = process.env;
 
-export const getPeople = async (
-  page: number  
-): Promise<CharacterSpanishModel[]> => {
+export const getCharacterByName = async (  
+  name: string,  
+): Promise<CharacterSpanishModel[]> => {  
   const headers = new Headers();
-  headers.append("Content-Type", "application/json");
+  headers.append("Content-Type", "application/json");  
 
-  try {        
+  try {
     const response = await fetch(
-      `${EXPO_PUBLIC_SWAPI_URL}/people/?page=${page}`,
+      `${EXPO_PUBLIC_SWAPI_URL}/people/?search=${name}`,
       {
         method: "GET",
         headers,
@@ -22,12 +23,11 @@ export const getPeople = async (
 
     if (!response.ok) return [];
 
-    const data = await response.json();
-    const resp: CharacterModel[] = data.results;
-    const adaptedResp: CharacterSpanishModel[] = resp.map((character) =>
-      characterAdapter(character)
-    );
-    return adaptedResp;
+    const data = await response.json();      
+    const resp:CharacterModel = data.results[0];
+    const adaptedResp: CharacterSpanishModel = characterAdapter(resp)    
+
+    return [adaptedResp];      
   } catch (error) {
     console.error(`Fetch <GET> error:${error}`);
     return [];

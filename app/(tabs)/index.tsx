@@ -1,14 +1,14 @@
 import { Image, StyleSheet } from 'react-native';
 
+import {type ReactElement, useEffect,useState} from 'react';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/atoms/ThemedText';
-import {useEffect,useState} from 'react';
 import { getMovies } from '@/server/getMovies';
 import { MovieSpanishModel } from '@/models/movie.model';
 import { MovieCard } from '@/components/organisms/MovieCard';
 
 
-export default function HomeScreen() {
+export default function HomeScreen():ReactElement {
   const [movies,setMovies] = useState<MovieSpanishModel[]>([]);
 
   useEffect(()=>{

@@ -3,8 +3,8 @@ import { TextInput, StyleSheet, SafeAreaView } from "react-native";
 
 interface SearchBarModel {
   searchPlaceholder: string;
-  value: string | number;
-  onChange: Dispatch<SetStateAction<number|string>>;
+  value: string;
+  onChange: Dispatch<SetStateAction<string>>;
 }
 
 export const SearchBar = ({
@@ -13,21 +13,11 @@ export const SearchBar = ({
   onChange,
 }: SearchBarModel): ReactElement => {
   return (
-    <TextInput
-      keyboardType="numeric"
+    <TextInput      
       style={styles.searchBar}
       placeholder={searchPlaceholder}
-      value={value.toString()} 
-      onChangeText={(text) => {
-        if (text === "") {
-          onChange(""); 
-        } else {
-          const numericValue = parseFloat(text);
-          if (!isNaN(numericValue)) {
-            onChange(numericValue); 
-          }
-        }
-      }}
+      value={value} 
+      onChangeText={onChange}
     />
   );
 };

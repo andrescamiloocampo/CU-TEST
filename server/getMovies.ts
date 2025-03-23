@@ -1,13 +1,14 @@
 import { MovieModel } from "@/models/movie.model";
 import { movieAdapter } from "@/adapters/movieAdapter";
 import { MovieSpanishModel } from "@/models/movie.model";
+const {EXPO_PUBLIC_SWAPI_URL} = process.env;
 
 export const getMovies = async():Promise<MovieSpanishModel[]> => {
     const headers = new Headers();
     headers.append('Content-Type','application/json');
 
     try {
-        const response = await fetch('https://swapi.py4e.com/api/films', {
+        const response = await fetch(`${EXPO_PUBLIC_SWAPI_URL}/films`, {
             method: 'GET',
             headers: headers,
         });

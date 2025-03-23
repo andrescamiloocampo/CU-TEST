@@ -1,46 +1,45 @@
-import { StyleSheet, Image } from "react-native";
+import { StyleSheet, Image, TouchableOpacity } from "react-native";
 
 import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { ThemedText } from "@/components/atoms/ThemedText";
-import { ThemedView } from "@/components/molecules/ThemedView";
+import { ThemedView } from "@/components/atoms/ThemedView";
 import { PaginationButton } from "@/components/atoms/PaginationButton";
 import { PageCounter } from "@/components/atoms/PageCounter";
-import { useEffect, useRef, useState } from "react";
+import { type ReactElement, useEffect, useRef, useState } from "react";
 import { getPeople } from "@/server/getPeople";
 import { CharacterSpanishModel } from "@/models/character.model";
 import { SearchBar } from "@/components/atoms/SearchBar";
 import { CharacterCard } from "@/components/organisms/CharacterCard";
-import { getCharacterById } from "@/server/getCharacterById";
+import { getCharacterByName } from "@/server/getCharacterByName";
+import { useRouter } from "expo-router";
+import { Pagination } from "@/components/organisms";
 
 type actionT = "next" | "prev";
 
-export default function TabTwoScreen() {
+export default function PeopleScreen(): ReactElement {
   const pages = 9;
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [people, setPeople] = useState<CharacterSpanishModel[]>([]);
-  const [searchTerm, setSearchTerm] = useState<number | string>("");
-
-  // useEffect(() => {
-  //   const fetchPeople = setTimeout(async () => {
-  //     const data = await getCharacterById(Number(searchTerm));
-  //     setPeople(data);
-  //   }, 300);
-  //   return () => clearTimeout(fetchPeople);
-  // }, [searchTerm]);
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const router = useRouter();
 
   const isFirstRender = useRef(true);
+
+  const navigateToCharacter = (characterName: string) => {
+    router.push(`/(tabs)/people/character?name=${characterName ?? ""}`);
+  };
 
   useEffect(() => {
     if (isFirstRender.current) {
       isFirstRender.current = false;
-      return; 
+      return;
     }
 
     const fetchCharacter = async () => {
-      const data = await getCharacterById(Number(searchTerm));
+      const data = await getCharacterByName(searchTerm);
       setPeople(data);
-    }
-    
+    };
+
     fetchCharacter();
   }, [searchTerm]);
 
@@ -51,17 +50,7 @@ export default function TabTwoScreen() {
     };
 
     fetchPeople();
-  }, [currentPage,searchTerm]);
-
-  const handlePage = (action: actionT) => {
-    if (action == "next") {
-      setCurrentPage((currentPage) => Math.min(currentPage + 1, pages));
-    }
-
-    if (action == "prev") {
-      setCurrentPage((currentPage) => Math.max(currentPage - 1, 1));
-    }
-  };
+  }, [currentPage, searchTerm]);  
 
   return (
     <ParallaxScrollView
@@ -79,7 +68,7 @@ export default function TabTwoScreen() {
           ¿Que clase de personas tiene el universo?
         </ThemedText>
       </ThemedView>
-      
+
       <ThemedView>
         <SearchBar
           searchPlaceholder="Encuentra un personaje por id"
@@ -87,30 +76,24 @@ export default function TabTwoScreen() {
           onChange={setSearchTerm}
         />
       </ThemedView>
-
-      <ThemedView style={styles.paginationContainer}>
-        <PaginationButton
-          onClick={() => {
-            handlePage("prev");
-          }}
-          iconName="arrow-left"
-        />
-
-        <PageCounter count={currentPage} />
-
-        <PaginationButton
-          onClick={() => {
-            handlePage("next");
-          }}
-          iconName="arrow-right"
-        />
-      </ThemedView>
+  
+      <Pagination currentPage={currentPage} pages={pages} setCurrentPage={setCurrentPage} />
 
       <ThemedView style={styles.peopleContainer}>
-        {people.map((character, index) => (
-          <CharacterCard {...character} key={`${character.nombre} ${index}`} />
-        ))}
+        {people.map((character, index) => {
+          if (character.nombre.length > 0) {
+            return (
+              <TouchableOpacity
+                onPress={() => navigateToCharacter(character.nombre)}
+                key={`${character.nombre} ${index + 1}`}
+              >
+                <CharacterCard {...character} />
+              </TouchableOpacity>
+            );
+          }
+        })}
       </ThemedView>
+      
     </ParallaxScrollView>
   );
 }
@@ -131,11 +114,5 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "column",
     gap: 12,
-  },
-  paginationContainer: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "space-evenly",
-    paddingBottom: 10,
-  },
+  },  
 });

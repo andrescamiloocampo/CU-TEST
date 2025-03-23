@@ -19,7 +19,7 @@ export const CharacterCard = ({ ...character }: CharacterSpanishModel) => {
         style={styles.character_profile}
       />      
 
-      <Text style={styles.name}>{character.nombre}</Text>
+      <Text style={styles.name}>{character.nombre ?? ''}</Text>
 
       <View style={styles.attributesContainer}>
         <View style={styles.attributeRow}>
